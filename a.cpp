@@ -33,6 +33,6 @@ void generate(){
 	for(int i = 0; i < n; i++){
 		a.push_back(rnd.next(h_low,h_high));
 	}
-    for(auto &ele : a) 
+	for(auto &ele : a) 
 	cout << ele << endl;
 }
