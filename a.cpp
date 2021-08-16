@@ -11,13 +11,13 @@ int k_high=1e5;
 #define endl '\n'
 void generate();
 int main(int argc, char* argv[]){
-	registerGen(argc, argv, 1);
-	string type = argc > 1 ? argv[1] : "unexpected";
+    registerGen(argc, argv, 1);
+    string type = argc > 1 ? argv[1] : "unexpected";
 	
-	if(type == "small"){
-		n_high = 10;
-        cars_high=20;
-	}
+    if(type == "small"){
+    	n_high = 10;
+    	cars_high=20;
+    }
 
     if(type == "custom"){
         n_low = n_high;
@@ -25,16 +25,16 @@ int main(int argc, char* argv[]){
         k_high = 5;
     }
 
-	if(type == "extreme"){
-		n_low = n_high;
-	}
-
-	generate();
-	return 0;
+    if(type == "extreme"){
+	n_low = n_high;
+    }
+	
+    generate();
+    return 0;
 }
 void generate(){
-	int n = rnd.next(n_low, n_high);
-	cout << n << endl;
+    int n = rnd.next(n_low, n_high);
+    cout << n << endl;
     set<long long>s;
     while((int)s.size() != n){
         s.insert(rnd.next(cars_low,cars_high));
