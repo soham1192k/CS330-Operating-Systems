@@ -1,0 +1,11 @@
+Q1
+(a) The parent process will successfully write the location ptr[4096] and the printf statement at line 15 will execute successfully. The child process will result in a segfault at line#14 because the sbrk call in the child expands the address space by 4096 bytes while accessing ptr[4096] accesses the 4097th location.
+
+(b) Yes
+
+(c) Stack
+
+(d) 0
+
+Q2
+   In this case, the child will execute the line #14 and #15 successfully. The child executing the sbrk at line #12 will make the access to ptr[4096] legitimate. Note that, in this case the ptr values of child and parent will differ by 4096.
