@@ -1,0 +1,21 @@
+
+Q1.
+
+(i) The OS will not intervene because when a register overflow occurs, a flag is set in the flags (eflags in X86) register by the hardware.  No exception is raised.
+
+(ii) The OS will intervene as write to the CS register can update the current privilege level which the hardware does not allow when the CPU is in user mode. Therefore, the hardware will raise an exception.
+
+(iii) The OS may intervene as the address in R1 may be invalid (or not mapped to physical address) where the hardware will raise a page fault and OS will handle the fault.
+
+Q2.
+
+(i) 
+False: Exception handling behaviour can be changed by modifying the IDT which is a privileged operation. Therefore, even with root user privileges, this is not possible.
+                      OR  
+True: 
+     Typically, the root user has permission to modify/replace the OS binary. In that case, a root user may modify the OS to allow modifying the IDT registration code from the user mode (e.g., using a 
+     newly introduced system call) in the OS. 
+
+(ii) 
+False: One of the strategy could be to skip the faulting instruction, but the OS may not know the size of the instruction to move the PC to the next instruction (especially in X86 like systems). Moreover, the OS may 
+       not know the exact program logic and the side-effects of skipping the instruction may be non-deterministic program behaviour.
