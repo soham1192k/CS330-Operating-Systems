@@ -1,0 +1,10 @@
+(a) The program will print 'Sum = 20' infinitely. The fork() at line#6 will create a single child and the child process will exec the same executable every time the function is invoked.  After that, the parent will return 20 and terminate executing 'printf' at line#20. The child process will execute the same program and will become the parent for this instance of execution. This pattern will repeat forever. 
+
+(b)   Max: 2 (one parent and one child)
+        Min: 1 (before the parent invoke fork)
+
+(c) Created: Infinite 
+      Destroyed: Infinite
+
+(d) Sum = 20
+      Sum = 10  (Mostly, the second print will happen after the parent's exit) 
