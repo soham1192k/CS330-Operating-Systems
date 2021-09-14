@@ -1,0 +1,32 @@
+Q1. True or False with reasoning (1-2 sentences). No marks without proper justification. (2 x 5 = 10) 
+
+
+(i) The malloc() library call will always invoke mmap() or brk().
+
+
+(ii) The OS can modify the code segment of a live process without hampering its execution.
+
+
+(iii) The exec() system call can be implemented by over-writing the code segment, initialized and uninitialized data segments of the calling process.
+
+ 
+(iv) A user program can change the stack pointer to an address allocated using mmap() without impacting the program correctness.
+
+
+(v) Allocation of 1GB memory using mmap() will always increase the physical memory usage of the system by 1GB.
+
+Q2. Consider the following pseudo code implementation of the div-by-zero fault handler (assume X86 system). Further assume that the IDT entry for divide by zero is configured 
+    with the address of the function 'handle_div_by_zero'. Assume that the division instruction is of length 4.   (5 + 3 + 2)
+
+    1. int handle_div_by_zero(u64 userPC){  //userPC is the faulting address
+    2.      PCB *current = get_current_pcb();   //get the current PCB, assume valid
+    3      //userPC += 4;
+    4      print_msg("For pid = %d updated PC = %lx\n", current->pid, userPC);
+    5      asm("iret;");  // Return from exception handler 
+    6 }   
+
+
+(i) Given that, the above implementation is buggy, point out the errors and  explain the precise ways to fix it (explaining the exact modifications  to the code).
+(ii) Assume that all the issues are fixed and line #3 is un-commented. What will be the behavior of any user program performing a division by zero?
+(iii) What will you change in the above code to skip the faulting instruction for any user program when it returns from the handler? 
+
