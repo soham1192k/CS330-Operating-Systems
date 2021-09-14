@@ -1,0 +1,11 @@
+   (a) The program will print two lines as output:
+            hello cs330!
+        <garbage/unpredicatble>      {it may print  hello cs330! if the read call at line #18 does not modify the buf, see below}
+
+
+       Explanation: Both parent and child will write "hello cs330!" to the pipe (line #9). The parent will read first 12 bytes from the pipe and print it.
+       The child will write 12 bytes ("hello folks!") into the file (as pipe is duped as fd). However, the file position will be at EOF when the parent reads it at line #18. Therefore, read will return 0 and content of the buffer is  unpredictable.
+   (b) hello folks!
+   (c) The printf at line#17 will print "hello cs330!hello cs330!". Rest will remain same as before.
+   (d) Before child exit: 4  (in child fd and pfd[1], in parent fd and pfd[1])
+         After child exit: 2   (parent fd and pfd[1]) 
