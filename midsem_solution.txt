@@ -1,0 +1,26 @@
+Q1
+
+
+(i) False. The malloc library may allocate a large chunk of virtual memory using mmap or brk and serve many requests from the allocated memory.
+(ii) False. There will be many issues related to the lack of knowledge of the current execution state at the OS level. For example, if the PC points to a function F3 called from main through F2, the stack will contain the return addresses corresponding to the old code which will result in non-deterministic behavior.
+(iii) False. Only updation of the code segment and the data segments will not be enough. The PC should be updated, user stack pointer is required to be reinitialized, the heap and other mapped areas must be removed.
+(iv) False. Only updating the stack pointer will not be useful as the old content of the stack will be lost i.e., all the local variables, function invocation information will be lost.
+     True (less likely). This is possible but before the stack pointer updation, all used locations from the stack should be copied to the new stack area and the stack pointer should be updated
+     accordingly. Moreover, there is an assumption that there are no  references (in register or heap) to the old stack address range to make this work.
+
+(v) False. mmap() allocates virtual address in the address space. With lazy allocation, the physical allocation is deferred till actual use.
+
+Q2
+(i) The most crucial problem is that there is no logic to save and restore the user execution state. Given that, the handler is directly invoked from the hardware after the process has faulted, the register
+    state of the process is required to be saved and restored. Otherwise, when we resume the process, the program execution will not resume with the state it faulted causing non-deterministic execution.
+    To fix this, the process execution context (the registers) must be saved to some memory location even before the OS handler logic i.e., before line #2, as the execution of an instruction may overwrite
+    any of the registers. Further, just before the 'iret' instruction, the execution state saved in memory should be loaded into the corresponding registers. Note that, in this implementation, there should be some
+    mapping between the saved value and the CPU register for correct restoration.
+
+    The other obvious issue is that the process is not killed and it may fault indefinitely.
+
+(ii) The user process will fault infinitely as the fault handler is not doing anything to fix the fault. The uncommenting of line#3 will have no effect on the user process as a local variable (i.e., userPC)
+     updation does not have any effect on the PC register value on return.
+
+(iii) To the saved value of the user PC register (refer to the  answer (i) ), we will add 4 such that at the time of restore, the PC will be restored back to execute the instruction following the
+      division instruction.
