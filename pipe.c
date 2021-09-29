@@ -6,6 +6,7 @@
 #include<file.h>
 
 int prev_pid=-1;
+
 // Per process info for the pipe.
 struct pipe_info_per_process {
     int useful;
@@ -16,7 +17,6 @@ struct pipe_info_per_process {
 // Global information for the pipe.
 struct pipe_info_global {
     char *pipe_buff;    // Pipe buffer: DO NOT MODIFY THIS.
-    int read_open,write_open;
     int read_pos,write_pos;
     int cnt;
     int buffer_offset;
@@ -37,6 +37,8 @@ struct pipe_info* alloc_pipe_info () {
     struct pipe_info *pipe = (struct pipe_info*)os_page_alloc(OS_DS_REG);
     char* buffer = (char*) os_page_alloc(OS_DS_REG);
 
+    if(pipe==NULL) return NULL;
+
     // Assign pipe buffer.
     pipe->pipe_global.pipe_buff = buffer;
 
@@ -47,6 +49,20 @@ struct pipe_info* alloc_pipe_info () {
      *  Initialize global fields for this pipe.
      *
      */
+
+    struct exec_context* current=get_current_ctx();
+
+    //fill global info fields
+    pipe->pipe_global.read_pos=0;
+    pipe->pipe_global.write_pos=0;
+    pipe->pipe_global.cnt=1;
+    pipe->pipe_global.buffer_offset=0;
+
+    // fill per process info fields
+    pipe->pipe_per_proc[0].pid=current->pid;
+    pipe->pipe_per_proc[0].is_read_open=1;
+    pipe->pipe_per_proc[0].is_write_open=1;
+    pipe->pipe_per_proc[0].useful=1;
 
     // Return the pipe.
     return pipe;
@@ -74,6 +90,9 @@ int do_pipe_fork (struct exec_context *child, struct file *filep) {
      *  Return 0 on success.
      *  Incase of any error return -EOTHERS.
      */
+
+    if(child==NULL) return -EOTHERS;
+    if(filep==NULL) return -EOTHERS;
     
     int parent_pid=get_current_ctx()->pid;
     int pid=child->pid;
@@ -110,6 +129,7 @@ int do_pipe_fork (struct exec_context *child, struct file *filep) {
     }
     
     prev_pid=pid;
+
     // Return successfully.
     return 0;
 
@@ -131,7 +151,10 @@ long pipe_close (struct file *filep) {
      *
      */
 
+    if(filep==NULL) return -EOTHERS;
+
     int ret_value;
+
     int curr=-1;
     int pid=get_current_ctx()->pid;
     for(int i=0;i<MAX_PIPE_PROC;i++){
@@ -151,19 +174,15 @@ long pipe_close (struct file *filep) {
 
     //if only 1 process refers to the pipe and both its ends are closed,free everything
     if(filep->pipe->pipe_global.cnt==0){
-        if(filep->pipe->pipe_per_proc[curr].is_read_open==0){
-            if(filep->pipe->pipe_per_proc[curr].is_write_open==0){
-                free_pipe(filep);
-            }
-        }
+        free_pipe(filep);
     }
 
     // Close the file and return.
     ret_value = file_close (filep);         // DO NOT MODIFY THIS LINE.
 
-    if(ret_value==0) return 0;
-    return -EOTHERS;
+    // if(filep!=NULL) return -EOTHERS;
 
+    return 0;
 }
 
 // Check whether passed buffer is valid memory location for read or write.
@@ -178,16 +197,16 @@ int is_valid_mem_range (unsigned long buff, u32 count, int access_bit) {
      *  If range is valid then return 1.
      *  Incase range is not valid or have some permission issue return -EBADMEM.
      */
+
     struct exec_context* curr=get_current_ctx();
+
     //starting and ending address of the buffer
     unsigned long buff_start=buff;
     unsigned long buff_end=buff+count;
 
-    // printk("BUFF START:%x\n",buff_start);
-    // printk("BUFF END:%x\n",buff_end);
-
     int ret_value = 1;   
     if(access_bit==1){
+
         //check for read
         int read_flag=0;
         int hold;
@@ -207,52 +226,57 @@ int is_valid_mem_range (unsigned long buff, u32 count, int access_bit) {
         
         //check if it lies in mm_segment 
         for(int i=0;i<MAX_MM_SEGS;i++){
+
             hold=(curr->mms[i].access_flags&1);
+
             if(hold==1&&buff_start>=curr->mms[i].start&&buff_end<=curr->mms[i].next_free){
                 read_flag=1;
             }
-            else if(hold==1&&buff_start>=0x7FF000000&&buff_start>=curr->mms[i].start&&buff_end<=curr->mms[i].end){
+
+            if(i==MAX_MM_SEGS-1&&hold==1&&buff_start>=curr->mms[i].start&&buff_end<=curr->mms[i].end){
                 read_flag=1;
             }
+            
             if(read_flag==1) break;
         }
 
         if(read_flag==0) return -EBADMEM;
     }
+
     else if(access_bit==2){
+
         //check for write
         int write_flag=0;
         int hold;
 
         //check if it lies in vm_area
         while(curr->vm_area!=NULL){
+
             unsigned long curr_start=curr->vm_area->vm_start;
             unsigned long curr_end=curr->vm_area->vm_end;
-            // printk("START VM:%x\n",curr_start);
-            // printk("END VM:%x\n",curr_end);
+
             hold=(curr->vm_area->access_flags&2);
             if(hold==2&&buff_start>=curr_start&&buff_end<=curr_end){
                 write_flag=1;
             }
+
             curr->vm_area=curr->vm_area->vm_next;
             if(write_flag==1) break;
             if(curr->vm_area==NULL) break;
         }
-        // printk("Write flag:%d\n",write_flag);
-        //check if it lies in mm_segment
+
         for(int i=0;i<MAX_MM_SEGS;i++){
-            // printk("START MM:%x\n",curr->mms[i].start);
-            // printk("NEXT FREE MM:%x\n",curr->mms[i].next_free);
-            // printk("END MM:%x\n",curr->mms[i].end);
-            // printk("ACCESS FLAGS:%d\n",curr->mms[i].access_flags);
+
             hold=(curr->mms[i].access_flags&2);
+
             if(hold==2&&buff_start>=curr->mms[i].start&&buff_end<=curr->mms[i].next_free){
                 write_flag=1;
             }
+
             else if(hold==2&&buff_start>=0x7FF000000&&buff_start>=curr->mms[i].start&&buff_end<=curr->mms[i].end){
                 write_flag=1;
             }
-            // printk("write_flag:%d\n",write_flag);
+
             if(write_flag==1) break;
         }
 
@@ -265,6 +289,7 @@ int is_valid_mem_range (unsigned long buff, u32 count, int access_bit) {
 // Function to read given no of bytes from the pipe.
 int pipe_read (struct file *filep, char *buff, u32 count) {
 
+    //user buffer me write=>check write permission for "buff"
     /**
      *  TODO:: Implementation of Pipe Read
      *
@@ -279,6 +304,9 @@ int pipe_read (struct file *filep, char *buff, u32 count) {
      *       -EOTHERS: For any other errors.
      *
      */
+    
+    if(filep==NULL) return -EINVAL;//check
+    if(!(filep->mode&O_READ)) return -EACCES;
 
     int pid=get_current_ctx()->pid;
     int curr=-1;
@@ -287,27 +315,27 @@ int pipe_read (struct file *filep, char *buff, u32 count) {
             curr=i;break;
         }
     }
-    if(!filep) return -EACCES;//check
-    if(!(filep->mode&O_READ)) return -EACCES;
+
     if(filep->pipe->pipe_per_proc[curr].is_read_open==0) return -EINVAL;
 
-    // int ret=is_valid_mem_range((unsigned long)buff,count,1);
-    // if(ret==-EBADMEM) return -EACCES;//check
+    int ret=is_valid_mem_range((unsigned long)buff,count,2);
+    if(ret==-EBADMEM) return -EOTHERS;
 
     int k=filep->pipe->pipe_global.read_pos;
+
     int bytes_read = 0;
+
     while(bytes_read<count){
-        if(filep->pipe->pipe_global.buffer_offset==0) return -EOTHERS;//check
+        if(filep->pipe->pipe_global.buffer_offset==0) break;
         buff[bytes_read]=filep->pipe->pipe_global.pipe_buff[k];
         bytes_read++;
-        k++;
+        k=(k+1)%MAX_PIPE_SIZE;
         filep->pipe->pipe_global.buffer_offset--;
     }
-    filep->pipe->pipe_global.read_pos=k;
-    
-    // Return no of bytes read.
-    return bytes_read;
 
+    filep->pipe->pipe_global.read_pos=k;
+
+    return bytes_read;
 }
 
 // Function to write given no of bytes to the pipe.
@@ -327,6 +355,9 @@ int pipe_write (struct file *filep, char *buff, u32 count) {
      *       -EOTHERS: For any other errors.
      *
      */
+    
+    if(filep==NULL) return -EINVAL;//check
+    if(!(filep->mode&O_WRITE)) return -EACCES;
 
     int pid=get_current_ctx()->pid;
     int curr=-1;
@@ -335,28 +366,24 @@ int pipe_write (struct file *filep, char *buff, u32 count) {
             curr=i;break;
         }
     }
-    if(!filep) return -EACCES;//check
-    if(!(filep->mode&O_WRITE)) return -EACCES;//check
+
     if(filep->pipe->pipe_per_proc[curr].is_write_open==0) return -EINVAL;
     
-    // int ret=is_valid_mem_range((unsigned long)buff,count,2);
-    // if(ret==-EBADMEM) return -EACCES;//check
-
+    int ret=is_valid_mem_range((unsigned long)buff,count,1);
+    if(ret==-EBADMEM) return -EOTHERS;
     
     int bytes_written = 0;
     int k=filep->pipe->pipe_global.write_pos;
     while(bytes_written<count){
-        if(filep->pipe->pipe_global.buffer_offset==MAX_PIPE_SIZE) return -EOTHERS;//check
+        if(filep->pipe->pipe_global.buffer_offset==MAX_PIPE_SIZE) break;
         filep->pipe->pipe_global.pipe_buff[k]=buff[bytes_written];
         bytes_written++;
-        k++;
+        k=(k+1)%MAX_PIPE_SIZE;
         filep->pipe->pipe_global.buffer_offset++;
     }
-    filep->pipe->pipe_global.write_pos=k;
+    filep->pipe->pipe_global.write_pos=k; 
 
-    // Return no of bytes written.
     return bytes_written;
-
 }
 
 // Function to create pipe.
@@ -364,12 +391,12 @@ int create_pipe (struct exec_context *current, int *fd) {
 
     /**
      *  TODO:: Implementation of Pipe Create
-     *  Fill the fields for those file objects like type, fops, etc.
-     *  On success, return 0.
      *  Incase of Error return valid Error code.
      *       -ENOMEM: If memory is not enough.
      *       -EOTHERS: Some other errors.
     */
+
+    if(current==NULL) return -EOTHERS;
 
     //find two free file descriptors
     //Fill the valid file descriptor in *fd param.
@@ -377,14 +404,14 @@ int create_pipe (struct exec_context *current, int *fd) {
     while(current->files[fd[0]])
     {
         fd[0]++;
-        if(fd[0]==MAX_OPEN_FILES) return -ENOMEM; //check
+        if(fd[0]==MAX_OPEN_FILES) return -EOTHERS; 
     }
     fd[1]=fd[0]+1;
-    if(fd[1]==MAX_OPEN_FILES) return -ENOMEM;//check
+    if(fd[1]==MAX_OPEN_FILES) return -EOTHERS;
     while(current->files[fd[1]])
     {
         fd[1]++;
-        if(fd[1]==MAX_OPEN_FILES) return -ENOMEM;//check
+        if(fd[1]==MAX_OPEN_FILES) return -EOTHERS;
     }
 
     //create two file objects for both ends by invoking the alloc_file() function
@@ -396,20 +423,6 @@ int create_pipe (struct exec_context *current, int *fd) {
     //create pipe_info object by invoking alloc_pipe_info() function 
     struct pipe_info* pipe_obj=alloc_pipe_info();
     if(!pipe_obj) return -ENOMEM;
-
-    //fill global info fields
-    pipe_obj->pipe_global.read_pos=0;
-    pipe_obj->pipe_global.write_pos=0;
-    pipe_obj->pipe_global.cnt=1;
-    pipe_obj->pipe_global.read_open=1;
-    pipe_obj->pipe_global.write_open=1;
-    pipe_obj->pipe_global.buffer_offset=0;
-
-    // fill per process info fields
-    pipe_obj->pipe_per_proc[0].pid=current->pid;
-    pipe_obj->pipe_per_proc[0].is_read_open=1;
-    pipe_obj->pipe_per_proc[0].is_write_open=1;
-    pipe_obj->pipe_per_proc[0].useful=1;
 
     // Fill the fields for those file objects like type, fops, etc.
     end1->pipe=pipe_obj;
@@ -426,6 +439,7 @@ int create_pipe (struct exec_context *current, int *fd) {
     end2->fops->write=pipe_write;
     end1->fops->close=pipe_close;
     end2->fops->close=pipe_close;
+
     current->files[fd[0]]=end1;
     current->files[fd[1]]=end2;
 
