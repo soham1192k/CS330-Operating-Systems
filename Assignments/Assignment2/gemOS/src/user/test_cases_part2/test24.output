@@ -1,0 +1,28 @@
+0
+3
+4
+5
+5
+hello
+4
+1
+======================
+
+3
+[3]hel
+[4]lhhel
+[5]heheh
+[6][0]ret code : 0 
+
+==========================-1
+RET CODE 2 = 0
+3
+5
+0
+WRITE 0
+5
+READ BUFF 2shubh
+WRITE 0
+2
+READ BUFF 2sh
+-1

@@ -1,0 +1,6 @@
+DBG: Current Parent Pid: 1
+P write (before fork): 20
+DBG: Parent Pid After Fork: 1
+P read: -1
+DBG: Child Pid After Fork: 2
+C read: -1
