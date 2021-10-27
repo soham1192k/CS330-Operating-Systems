@@ -1,0 +1,13 @@
+Q1.
+(i) False. The page fault may be result of illegal access (e.g., writing to a read-only page, accessing a kernel virtual address or unallocated virtual address) where the OS does not modify the page table. Rather, it raises
+    segfault and kills the process.
+
+   
+
+    True. Fixing a page fault will require allocation of a new page and updation of the page table to map the virtual address to the physical address.
+
+(ii) False. In a split addressing mode, the address space does not change at the time of user-OS context switch. Therefore, TLB flush can be  avoided using a split-addressing scheme.
+    
+(iii) False. Freeing the virtual address range where not even a single page is  mapped in the page table will not result in any page table modification.  (example: mmap(1G); munmap(1G);)
+
+(iv) True. Freeing of the single page that was mapped in page table may free up some page table pages, starting from the leaf level if the PTE corresponding to the page happened to be the only entry. Therefore, increase in free memory can be more than the page size.
