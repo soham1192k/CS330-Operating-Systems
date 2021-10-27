@@ -1,0 +1,35 @@
+end_handler address: 0x100000D80 
+Main address: 0x100000DB4 
+fn_1 address: 0x100000D98 
+SET BRKPOINT fn1:0
+In Child main calling fn_1()
+RET:0x100000D98
+AT fn_1 beginning
+Registers:
+         RIP: 0x100000D98
+         RSP: 0x7FFFFFE40
+         RBP: 0x7FFFFFFA8
+         RAX: 0x0
+         RDI: 0x19
+         RSI: 0x1
+         RDX: 0x7FFFFED78
+         RCX: 0x1D
+         RIP: 0x0
+         RIP: 0x115088
+In fn_1.
+RET:0x100000D80
+AT fn_1 end
+Registers:
+         RIP: 0x100000D80
+         RSP: 0x7FFFFFE40
+         RBP: 0x7FFFFFFA8
+         RAX: 0x0
+         RDI: 0x19
+         RSI: 0x1
+         RDX: 0x7FFFFED68
+         RCX: 0x9
+         RIP: 0x0
+         RIP: 0x115088
+In End Handler
+RET:0x0
+CHILD FINISHED

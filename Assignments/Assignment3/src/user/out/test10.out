@@ -1,0 +1,103 @@
+Recursive Testcase
+ fn_1 end_bp_enabled
+main() calls fn_1, fn_1 calls itself 3 times
+ ###### 
+end_handler address: 0x100000D80 
+Main address: 0x100000DD4 
+fn_1 address: 0x100000D98 
+In Parent main(). Set Breakpoints.
+In Child main calling fn_1()
+In Parent main(). Child in fn_1() beginning.
+BackTrace 0 / 2 : 0x100000D98
+BackTrace 1 / 2 : 0x100000EF9
+Registers:
+         RIP: 0x100000D98
+         RSP: 0x7FFFFFDE0
+         RBP: 0x7FFFFFFA8
+         RAX: 0x3
+         RDI: 0x3
+         RSI: 0x1
+         RDX: 0x7FFFFED18
+         RCX: 0x1D
+         R8: 0x0
+         R9: 0x115088
+In fn1. Recursion Depth (inverted): 3
+In Parent main(). Child in fn_1() beginning.
+BackTrace 0 / 3 : 0x100000D98
+BackTrace 1 / 3 : 0x100000DCD
+BackTrace 2 / 3 : 0x100000EF9
+Registers:
+         RIP: 0x100000D98
+         RSP: 0x7FFFFFDC0
+         RBP: 0x7FFFFFDD8
+         RAX: 0x2
+         RDI: 0x2
+         RSI: 0x1
+         RDX: 0x7FFFFECF8
+         RCX: 0x26
+         R8: 0x0
+         R9: 0x115088
+In fn1. Recursion Depth (inverted): 2
+In Parent main(). Child in fn_1() beginning.
+BackTrace 0 / 4 : 0x100000D98
+BackTrace 1 / 4 : 0x100000DCD
+BackTrace 2 / 4 : 0x100000DCD
+BackTrace 3 / 4 : 0x100000EF9
+Registers:
+         RIP: 0x100000D98
+         RSP: 0x7FFFFFDA0
+         RBP: 0x7FFFFFDB8
+         RAX: 0x1
+         RDI: 0x1
+         RSI: 0x1
+         RDX: 0x7FFFFECD8
+         RCX: 0x26
+         R8: 0x0
+         R9: 0x115088
+In fn1. Recursion Depth (inverted): 1
+In Parent main(). Child in fn_1() end.
+BackTrace 0 / 3 : 0x100000DCD
+BackTrace 1 / 3 : 0x100000DCD
+BackTrace 2 / 3 : 0x100000EF9
+Registers:
+         RIP: 0x100000D80
+         RSP: 0x7FFFFFDA0
+         RBP: 0x7FFFFFDB8
+         RAX: 0x0
+         RDI: 0x19
+         RSI: 0x1
+         RDX: 0x7FFFFECB8
+         RCX: 0x26
+         R8: 0x0
+         R9: 0x115088
+In End Handler
+In Parent main(). Child in fn_1() end.
+BackTrace 0 / 2 : 0x100000DCD
+BackTrace 1 / 2 : 0x100000EF9
+Registers:
+         RIP: 0x100000D80
+         RSP: 0x7FFFFFDC0
+         RBP: 0x7FFFFFDD8
+         RAX: 0x0
+         RDI: 0x19
+         RSI: 0x1
+         RDX: 0x7FFFFECC8
+         RCX: 0xF
+         R8: 0x0
+         R9: 0x115088
+In End Handler
+In Parent main(). Child in fn_1() end.
+BackTrace 0 / 1 : 0x100000EF9
+Registers:
+         RIP: 0x100000D80
+         RSP: 0x7FFFFFDE0
+         RBP: 0x7FFFFFFA8
+         RAX: 0x0
+         RDI: 0x19
+         RSI: 0x1
+         RDX: 0x7FFFFECE8
+         RCX: 0xF
+         R8: 0x0
+         R9: 0x115088
+In End Handler
+In Parent main(). Child exited.

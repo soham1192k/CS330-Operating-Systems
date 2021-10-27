@@ -1,0 +1,68 @@
+Registers Testcase
+ fn_1 fn_2 both end_bp_enabled
+main() calls fn_1, exits, then calls fn_2
+ ###### 
+end_handler address: 0x100000D80 
+Main address: 0x100000DD0 
+fn_1 address: 0x100000DB4 
+fn_2 address: 0x100000D98 
+ ###### 
+In Parent main(). Set Breakpoints.
+In Child main calling fn_1()
+In Parent main(). Child in fn_1() beginning.
+Registers:
+  RIP: 0x100000DB4
+  RSP: 0x7FFFFFEB0
+  RBP: 0x7FFFFFFA8
+  RAX: 0x0
+  RDI: 0x19
+  RSI: 0x1
+  RDX: 0x7FFFFEDE8
+  RCX: 0x1D
+  RIP: 0x0
+  RIP: 0x115088
+In fn1
+In Parent main(). Child in fn_1() end.
+Registers:
+  RIP: 0x100000D80
+  RSP: 0x7FFFFFEB0
+  RBP: 0x7FFFFFFA8
+  RAX: 0x0
+  RDI: 0x19
+  RSI: 0x1
+  RDX: 0x7FFFFEDD8
+  RCX: 0x7
+  RIP: 0x0
+  RIP: 0x115088
+In End Handler
+In Child main. fn_1 finished. Calling fn_2()
+In Parent main(). Child in fn_2() beginning.
+Remove Breakpoint fn_1 returned 0
+Remove Breakpoint fn_2 returned -1
+Registers:
+  RIP: 0x100000D98
+  RSP: 0x7FFFFFEB0
+  RBP: 0x7FFFFFFA8
+  RAX: 0x0
+  RDI: 0x19
+  RSI: 0x1
+  RDX: 0x7FFFFEDE8
+  RCX: 0x2D
+  RIP: 0x0
+  RIP: 0x115088
+In fn2
+In Parent main(). Child in fn_2() end.
+Registers:
+  RIP: 0x100000D80
+  RSP: 0x7FFFFFEB0
+  RBP: 0x7FFFFFFA8
+  RAX: 0x0
+  RDI: 0x19
+  RSI: 0x1
+  RDX: 0x7FFFFEDD8
+  RCX: 0x7
+  RIP: 0x0
+  RIP: 0x115088
+In End Handler
+In Child main(). fn_2 finished
+In Parent main(). Child exited.

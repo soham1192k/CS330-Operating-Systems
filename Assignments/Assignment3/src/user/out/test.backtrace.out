@@ -1,0 +1,27 @@
+Backtrace Testcase
+breakpointed: fn_1 and fn_3, end_bp_enabled: fn_1
+main() calls fn_1, fn_1 then calls fn_2, fn_2 calls fn_3
+ ###### 
+end_handler address: 0x100000D80 
+Main address: 0x100000E00 
+fn_1 address: 0x100000DDA 
+fn_2 address: 0x100000DB4 
+fn_3 address: 0x100000D98 
+ ###### 
+In Parent main(). Set Breakpoints.
+In Child main calling fn_1()
+In Parent main(). Child in fn_1() beginning.
+BackTrace 0 / 2 : 0x100000DDA
+BackTrace 1 / 2 : 0x100000F54
+In fn_1(). Calling fn_2()
+In fn_2(). Calling fn_3().
+In Parent main(). Child in fn_3() beginning.
+BackTrace 0 / 4 : 0x100000D98
+BackTrace 1 / 4 : 0x100000DD3
+BackTrace 2 / 4 : 0x100000DF9
+BackTrace 3 / 4 : 0x100000F54
+In fn_3()
+In Parent main(). Child in fn_1() end.
+BackTrace 0 / 1 : 0x100000F54
+In End Handler
+In Parent main(). Child exited.

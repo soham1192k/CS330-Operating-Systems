@@ -1,0 +1,37 @@
+Nested Testcase
+ fn_1 fn_2 both end_bp_enabled
+main() calls fn_1, fn_1 then calls fn_2
+ ###### 
+end_handler address: 0x100000D80 
+Main address: 0x100000DDA 
+fn_1 address: 0x100000DB4 
+fn_2 address: 0x100000D98 
+ ###### 
+In Parent main(). Set Breakpoints.
+In Child main calling fn_1()
+RET:0x100000DB4
+In Parent main(). Child in fn_1() beginning.
+Breakpoints:
+1 1 0x100000DB4
+2 1 0x100000D98
+In fn_1(). Calling fn_2()
+RET:0x100000D98
+In Parent main(). Child in fn_2() beginning.
+Breakpoints:
+1 1 0x100000DB4
+2 1 0x100000D98
+In fn_2
+RET:0x100000D80
+In Parent main(). Child in fn_2() end.
+Breakpoints:
+1 1 0x100000DB4
+2 1 0x100000D98
+In End Handler
+RET:0x100000D80
+In Parent main(). Child in fn_1() end.
+Breakpoints:
+1 1 0x100000DB4
+2 1 0x100000D98
+In End Handler
+RET:0x0
+In Parent main(). Child exited.

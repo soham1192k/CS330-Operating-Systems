@@ -1,0 +1,23 @@
+end_handler address: 0x100000D80 
+Main address: 0x100000DDA 
+fn_1 address: 0x100000DB4 
+fn_2 address:0x100000D98
+RET:0
+In Child main calling fn_1()
+In fn_1.Calling fn_2
+0x100000D98
+BEGINNING OF FN_2
+RET:0
+BackTrace 0 / 3 : 0x100000D98
+BackTrace 1 / 3 : 0x100000DD3
+BackTrace 2 / 3 : 0x100000EDB
+In fn_2.
+0x100000D80
+AT THE END OF FN_2
+BackTrace 0 / 2 : 0x100000DD3
+BackTrace 1 / 2 : 0x100000EDB
+In End Handler
+0x0
+EXITED CHILD
+BackTrace 0 / 2 : 0x100000DD3
+BackTrace 1 / 2 : 0x100000EDB

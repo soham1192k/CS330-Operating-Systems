@@ -1,0 +1,11 @@
+end_handler address: 0x100000D80 
+Main address: 0x100000DB4 
+fn_1 address: 0x100000D98 
+RET:0
+In Child main calling fn_1()
+0x100000D98
+AT fn_1 start
+0
+In fn_1.
+0x0
+CHILD END

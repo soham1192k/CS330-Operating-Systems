@@ -1,0 +1,23 @@
+end_handler address: 0x100000D80 
+Main address: 0x100000DDA 
+fn_1 address: 0x100000DB4 
+fn_2 address:0x100000D98
+RET:0
+RET:0
+In Child main calling fn_1()
+0x100000DB4
+BEGINNING OF FN_1
+In fn_1.Calling fn_2
+0x100000D98
+BEGINNING OF FN_2
+CHANGED BREAKPOINT RET:0
+CHANGED BREAKPOINT RET:0
+In fn_2.
+0x100000D80
+END OF FN_2
+In End Handler
+0x100000D80
+END OF FN_1
+In End Handler
+0x0
+END OF CHILD
