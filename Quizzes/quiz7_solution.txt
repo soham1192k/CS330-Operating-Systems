@@ -1,0 +1,5 @@
+Q1. X belongs to set S where S = {x: x=10n and 1000-10K <= x <= 1000+20K, n is an integer}
+Q2. X belongs to set S where S = {x: x=10n and 1000 <= x <= 1000+20K, n is an integer}
+                           OR    
+
+       S = {x: x=10n and 1020 - 10K <= x <= 1000+20K, n is an integer}
