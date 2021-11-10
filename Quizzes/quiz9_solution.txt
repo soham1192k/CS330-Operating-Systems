@@ -1,0 +1,14 @@
+Q1. There can be four scenarios of deadlock.
+
+
+(i) Threads check the 'if' condition one after the other and only one thread enters the 'if' block. In this case, two threads will wait at line#9 and one at line#10.
+(ii) Two threads enter the 'if' block and set the S.val = 2. After that, both threads acquire the semaphore at line #9 and wait at line #10. The third thread follows these two threads and gets stuck at line#9. 
+(iii) All thread threads enter the 'if' block and set the S.val = 3. After that, all threads acquire the semaphore at line#9 but wait for the semaphore at line#10.
+
+(iv) Two threads enter the 'if' block and set the S.val = 2. After that one thread runs to completion. The remaining two threads acquire the semaphore at line#9 and wait for the semaphore at line #10.
+
+Q2. 
+(a) True. For all threads to complete, sem_post() at line #7 must be called at least two times. Therefore, the malloc() must be called minimum twice (as both of them are part of same 'if' block).
+
+
+(b) False. If two threads enter the 'if' block and execute line#9 to line#14 one after the other while the other thread enters the 'if' block and calls malloc only after the other two threads complete the increment operation at line #11, *ptr will be 1 in this case.
